@@ -24,7 +24,7 @@ object TP3 {
   val q2 = crimes.groupBy( l => l.crimedescr).map(t => (t._1, t._2.size)).sortBy(u => - u._2).take(3)
   q2.foreach(println)
   //Q3
-  val q3 = crimes.map(t => (t.crimedescr,t.cdatetime)).groupBy(l => l._1).map(t => (t._1, t._2.size))
+  val q3 = crimes.map(t => (t.crimedescr,t.cdatetime)).groupBy(l => l._1).map(t => (t._1, t._2.size))// a diviser par 31, nombre de jours en Janvier
   q3.foreach(println)
 
   //Data frames
