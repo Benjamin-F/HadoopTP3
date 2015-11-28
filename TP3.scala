@@ -1,10 +1,17 @@
 //package org.src;
 import java.sql.Date;
+import org.apache.spark.SparkContext
+import org.apache.spark.SparkContext._
+import org.apache.spark.SparkConf
 
 object TP3 {
  case class Crime(cdatetime: Date, address: String, district: Int, beat: String, grid: Int, crimedescr: String, ucr_ncir_code: Int, latitude: String, longitude: String)
 
  def main(args: Array[String]) {
+  val conf = new SparkConf().setAppName("TP3")
+  val sc = new SparkContext(conf)
+  val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+  import sqlContext.implicits._
   val format = new java.text.SimpleDateFormat("M/dd/yy")
 
   val myCrimes = sc.textFile("/res/spark_assignment/crimes.csv").mapPartitionsWithIndex { (idx, iter) => if (idx == 0) iter.drop(1) else iter }
@@ -46,7 +53,7 @@ object TP3 {
  //PART2
  val part2 = crimesDF.groupBy('district).count.select('district, 'count /31)
 
- part2.write.format("com.databricks.sparl.csv").option("header","true").save("average of crime per district per day.csv")
+ part2.write.format("com.databricks.spark.csv").option("header","true").save("AverageOfCrimePerDistrictPerDay.csv")
 
  }
 }
