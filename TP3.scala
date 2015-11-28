@@ -4,11 +4,7 @@ import java.sql.Date;
 object TP3 {
  case class Crime(cdatetime: Date, address: String, district: Int, beat: String, grid: Int, crimedescr: String, ucr_ncir_code: Int, latitude: String, longitude: String)
 
- val myFunc = udf {(x: BigInt) => x.toFloat/30}
-
  def main(args: Array[String]) {
-  //sc.textfile("/res/spark_assignment/crimes.csv")
-  //val filecsv = sc.textFile("/res/spark_assignment/crimes.csv")
   val format = new java.text.SimpleDateFormat("M/dd/yy")
 
   val myCrimes = sc.textFile("/res/spark_assignment/crimes.csv").mapPartitionsWithIndex { (idx, iter) => if (idx == 0) iter.drop(1) else iter }
@@ -20,15 +16,15 @@ object TP3 {
   })
 
   //Q1 RDD
-  val q1 =  crimes.groupBy( l => l.crimedescr).map(t => (t._1, t._2.size)).sortBy(u => - u._2).take(1)
-  q1.foreach(println)
+  val rddq1 =  crimes.groupBy( l => l.crimedescr).map(t => (t._1, t._2.size)).sortBy(u => - u._2).take(1)
+  rddq1.foreach(println)
   //Q2
-  val q2 = crimes.groupBy( l => l.cdatetime).map(t => (t._1, t._2.size)).sortBy(u => - u._2).take(3)
-  q2.foreach(println)
+  val rddq2 = crimes.groupBy( l => l.cdatetime).map(t => (t._1, t._2.size)).sortBy(u => - u._2).take(3)
+  rddq2.foreach(println)
 
   //Q3
-  val q3 = crimes.groupBy(l => l.crimedescr).map(t => (t._1, t._2.size.toFloat/30))
-  q3.foreach(println)
+  val rddq3 = crimes.groupBy(l => l.crimedescr).map(t => (t._1, t._2.size.toFloat/30))
+  rddq3.foreach(println)
 
   //Obtenir juste les crimes et leur date:
   // crimes.map(t => (t.crimedescr,t.cdatetime))
@@ -36,16 +32,21 @@ object TP3 {
   val crimesDF = crimes.toDF()
 
   //Q1
-  val q1 = crimesDF.groupBy('crimedescr).count().sort(- 'count).take(1)
-  q1.foreach(println)
+  val dfq1 = crimesDF.groupBy('crimedescr).count().sort(- 'count).take(1)
+  dfq1.foreach(println)
 
   //Q2
-  val q2 = crimesDF.groupBy('cdatetime).count().sort(- 'count).take(3)
-  q2.foreach(println)
+  val dfq2 = crimesDF.groupBy('cdatetime).count().sort(- 'count).take(3)
+  dfq2.foreach(println)
 
   //Q3
-  val q3 = crimesDF.groupBy('crimedescr).count().select('crimedescr, 'count /30)
-  q3.collect.foreach(println)
+  val dfq3 = crimesDF.groupBy('crimedescr).count().select('crimedescr, 'count /31)
+  dfq3.collect.foreach(println)
+
+ //PART2
+ val part2 = crimesDF.groupBy('district).count.select('district, 'count /31)
+
+ part2.write.format("com.databricks.sparl.csv").option("header","true").save("average of crime per district per day.csv")
 
  }
 }
