@@ -7,7 +7,7 @@ object TP3 {
  def main(args: Array[String]) {
   //sc.textfile("/res/spark_assignment/crimes.csv")
   //val filecsv = sc.textFile("/res/spark_assignment/crimes.csv")
-  val format = new java.text.SimpleDateFormat("dd/MM/yy HH:mm")
+  val format = new java.text.SimpleDateFormat("M/dd/yy")
 
   val myCrimes = sc.textFile("/res/spark_assignment/crimes.csv").mapPartitionsWithIndex { (idx, iter) => if (idx == 0) iter.drop(1) else iter }
 
@@ -21,7 +21,7 @@ object TP3 {
   val q1 =  crimes.groupBy( l => l.crimedescr).map(t => (t._1, t._2.size)).sortBy(u => - u._2).take(1)
   q1.foreach(println)
   //Q2
-  val q2 = crimes.groupBy( l => l.crimedescr).map(t => (t._1, t._2.size)).sortBy(u => - u._2).take(3)
+  val q2 = crimes.groupBy( l => l.cdatetime).map(t => (t._1, t._2.size)).sortBy(u => - u._2).take(3)
   q2.foreach(println)
   //Q3
   val q3 = crimes.map(t => (t.crimedescr,t.cdatetime)).groupBy(l => l._1).map(t => (t._1, t._2.size))// a diviser par 31, nombre de jours en Janvier
