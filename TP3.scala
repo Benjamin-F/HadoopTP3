@@ -51,9 +51,9 @@ object TP3 {
   dfq3.collect.foreach(println)
 
  //PART2
- val part2 = crimesDF.groupBy('district).count.select('district, 'count /31)
+ val part2 = crimesDF.groupBy('district).count.select('district, 'count /31 as "Average")
 
- part2.write.format("com.databricks.spark.csv").option("header","true").save("AverageOfCrimePerDistrictPerDay.csv")
+ part2.select('district,'Average).write.format("com.databricks.spark.csv").option("header", "false").save("AverageOfCrimePerDistrictPerDay4.csv")
 
  }
 }
