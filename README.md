@@ -1,6 +1,8 @@
 # HadoopTP3
 Spark assignment
 
+Please find the git repository at the following address: https://github.com/Benjamin-F/HadoopTP3.git
+
 In order to test our bundled jar, we run this command :
 /usr/hdp/current/spark-client/bin/spark-submit --jars /home/parrie/TP3/spark-csv_2.10-1.3.0.jar,/home/parrie/TP3/commons-csv-1.2.jar /home/parrie/TP3/sparklab_2.10-1.0.jar
 
