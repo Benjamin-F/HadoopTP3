@@ -3,9 +3,15 @@ import java.sql.Date;
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
 import org.apache.spark.SparkConf
+import java.io
 
 object TP3 {
  case class Crime(cdatetime: Date, address: String, district: Int, beat: String, grid: Int, crimedescr: String, ucr_ncir_code: Int, latitude: String, longitude: String)
+
+ def printToFile(f: java.io.File)(op: java.io.PrintWriter => Unit) {
+  val p = new java.io.PrintWriter(f)
+  try { op(p) } finally { p.close() }
+}
 
  def main(args: Array[String]) {
   val conf = new SparkConf().setAppName("TP3")
@@ -52,8 +58,11 @@ object TP3 {
 
  //PART2
  val part2 = crimesDF.groupBy('district).count.select('district, 'count /31 as "Average")
+ part2.collect.foreach(println)
 
- part2.select('district,'Average).write.format("com.databricks.spark.csv").option("header", "false").save("AverageOfCrimePerDistrictPerDay4.csv")
+ printToFile(new java.io.File("AverageNumberOfCrimePerDayPerDistrict.csv")) { p =>
+  part2.collect.foreach(l => p.println(l(0)+","+l(1)))
+}
 
  }
 }
